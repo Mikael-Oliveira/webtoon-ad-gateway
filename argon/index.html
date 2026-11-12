@@ -1,89 +1,447 @@
-<!doctype html>
-<html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark scroll-smooth">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Argon Video Downloader — instalação e plano Vitalício</title>
-  <link rel="stylesheet" href="argon.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Argon Video DL — Baixe vídeos e áudios direto no navegador</title>
+  <meta name="description" content="Extensão para Chrome, Brave e Opera que baixa os vídeos e áudios das páginas que você abre. 3 downloads grátis por dia ou Vitalício por R$ 15.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com/3.4.1"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              dark: '#06070d', card: '#0b0d17', line: '#1e2338',
+              purple: '#7c3aed', purpleLight: '#a855f7', cyan: '#06b6d4', cyanLight: '#22d3ee', amber: '#f59e0b'
+            }
+          },
+          fontFamily: { sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'] },
+          keyframes: {
+            pulseGlow: { '0%,100%': { opacity: '.4', transform: 'scale(1)' }, '50%': { opacity: '.8', transform: 'scale(1.08)' } },
+            float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+            shimmer: { '0%': { transform: 'skewX(-20deg) translateX(-150%)' }, '100%': { transform: 'skewX(-20deg) translateX(350%)' } }
+          },
+          animation: { 'pulse-glow': 'pulseGlow 4s ease-in-out infinite', float: 'float 6s ease-in-out infinite', shimmer: 'shimmer 3s infinite' }
+        }
+      }
+    };
+  </script>
   <style>
-    body { font-size: 15px; }
-    .page { max-width: 860px; margin: 0 auto; padding: 32px 16px 64px; }
-    .hero { text-align: center; padding: 24px 0 8px; }
-    .hero .logo { width: 64px; height: 64px; font-size: 32px; margin: 0 auto 14px; border-radius: 18px; }
-    .hero h1 { font-size: clamp(26px, 5vw, 40px); }
-    .hero p { color: var(--muted); max-width: 560px; margin: 10px auto 0; }
-    .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 22px; }
-    .card h2 { margin: 0 0 6px; font-size: 16px; }
-    .card p, .card li { color: var(--muted); margin: 4px 0; }
-    ol { padding-left: 20px; margin: 8px 0 0; } ol li { margin: 6px 0; color: var(--text); }
-    code { background: rgba(255,255,255,.08); border-radius: 6px; padding: 1px 6px; font-size: .9em; }
-    .price { font-size: 38px; font-weight: 800; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    a.cta { display: block; text-decoration: none; text-align: center; }
-    h3 { margin: 28px 0 0; font-size: 18px; }
-    .note { margin-top: 28px; color: var(--muted); font-size: 12px; }
+    body { background: #06070d; color: #f3f4f6; overflow-x: hidden; }
+    .glow-purple { background: radial-gradient(circle, rgba(124,58,237,.25) 0%, rgba(6,7,13,0) 70%); }
+    .glow-cyan { background: radial-gradient(circle, rgba(6,182,212,.2) 0%, rgba(6,7,13,0) 70%); }
+    .shimmer { position: relative; overflow: hidden; }
+    .shimmer::after { content: ''; position: absolute; inset: 0 auto 0 0; width: 40%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent); animation: shimmer 3s infinite; }
+    /* ---- demonstração: a câmera aproxima do ponto certo de cada cena ---- */
+    #stage { transition: transform .9s cubic-bezier(.16,1,.3,1); transform-origin: 50% 50%; will-change: transform; }
+    .fade { transition: opacity .45s ease, transform .45s ease; }
+    .hide { opacity: 0; transform: translateY(8px) scale(.97); pointer-events: none; }
+    .cursor { position: absolute; width: 22px; height: 22px; transition: left .8s cubic-bezier(.16,1,.3,1), top .8s cubic-bezier(.16,1,.3,1); z-index: 60; pointer-events: none; }
+    .cursor.click::after { content: ''; position: absolute; left: -9px; top: -9px; width: 40px; height: 40px; border-radius: 50%; border: 2px solid #22d3ee; animation: ping .6s ease-out; }
+    @keyframes ping { from { transform: scale(.3); opacity: 1 } to { transform: scale(1.4); opacity: 0 } }
+    ::-webkit-scrollbar { width: 8px } ::-webkit-scrollbar-track { background: #06070d } ::-webkit-scrollbar-thumb { background: #1e2338; border-radius: 4px }
+    @media (prefers-reduced-motion: reduce) { #stage, .fade, .cursor { transition: none !important } .animate-float, .animate-pulse-glow, .shimmer::after { animation: none !important } }
   </style>
 </head>
-<body>
-<div class="page">
-  <div class="hero">
-    <div class="logo">⚡</div>
-    <h1>ARGON <span>VIDEO</span> DL</h1>
-    <p>Baixe vídeos e áudios de qualquer site — incluindo YouTube e Shorts — direto no seu navegador. Sem servidor, sem cadastro.</p>
-  </div>
+<body class="relative min-h-screen font-sans selection:bg-brand-purple selection:text-white">
 
-  <div class="grid">
-    <div class="card"><h2>🆓 Grátis</h2><p><b>1 anúncio de 15 s = 3 downloads.</b></p><p>Vídeo ou só áudio, você escolhe. Cada download concluído gasta 1 crédito.</p></div>
-    <div class="card life"><h2>💎 Vitalício</h2><div class="price">R$ 15</div><p>Pagamento único. Sem anúncios para sempre, créditos ∞.</p>
-      <a class="cta" id="buy" href="#chave"><button class="cta" type="button">💎 Quero o Vitalício</button></a></div>
-  </div>
+  <div class="fixed top-0 left-1/4 w-[600px] h-[600px] glow-purple pointer-events-none rounded-full blur-3xl animate-pulse-glow z-0"></div>
+  <div class="fixed top-1/3 right-0 w-[500px] h-[500px] glow-cyan pointer-events-none rounded-full blur-3xl animate-pulse-glow z-0" style="animation-delay:2s"></div>
 
-  <h3>Como instalar (2 minutos)</h3>
-  <div class="grid">
-    <div class="card"><h2>Chrome (modo desenvolvedor)</h2>
-      <ol>
-        <li>Baixe e extraia o arquivo <code>argon-video-downloader-v1.zip</code>.</li>
-        <li>Abra <code>chrome://extensions</code>.</li>
-        <li>Ligue <b>Modo do desenvolvedor</b> (canto superior direito).</li>
-        <li>Clique em <b>Carregar sem compactação</b> e escolha a pasta extraída (a que tem o <code>manifest.json</code>).</li>
-        <li>Fixe o ícone ⚡ na barra de ferramentas.</li>
-      </ol></div>
-    <div class="card"><h2>Brave</h2>
-      <ol>
-        <li>Abra <code>brave://extensions</code>.</li>
-        <li>Ligue <b>Modo do desenvolvedor</b>.</li>
-        <li><b>Carregar sem compactação</b> → pasta extraída.</li>
-      </ol>
-      <p>Se o Brave bloquear o anúncio, desative os Escudos (Shields) só no site do gateway.</p></div>
-    <div class="card"><h2>Opera</h2>
-      <ol>
-        <li>Abra <code>opera://extensions</code>.</li>
-        <li>Ligue <b>Modo do desenvolvedor</b>.</li>
-        <li><b>Carregar descompactada</b> → pasta extraída.</li>
-      </ol></div>
-  </div>
+  <!-- TOPO -->
+  <header class="sticky top-0 z-50 backdrop-blur-xl bg-brand-dark/80 border-b border-brand-line/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-purple to-brand-cyan p-[2px] shadow-lg shadow-brand-purple/30">
+          <div class="w-full h-full bg-brand-dark rounded-[10px] flex items-center justify-center"><i class="fa-solid fa-bolt text-brand-amber"></i></div>
+        </div>
+        <span class="text-base sm:text-xl font-extrabold tracking-tight whitespace-nowrap">ARGON <span class="bg-gradient-to-r from-brand-purpleLight to-brand-cyanLight bg-clip-text text-transparent">VIDEO</span> DL</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300">
+        <a href="#como-funciona" class="hover:text-brand-cyan">Como funciona</a>
+        <a href="#precos" class="hover:text-brand-cyan">Planos</a>
+        <a href="#ativacao" class="hover:text-brand-cyan">Ativação</a>
+        <a href="#instalacao" class="hover:text-brand-cyan">Instalar</a>
+        <a href="#faq" class="hover:text-brand-cyan">Dúvidas</a>
+      </nav>
+      <a href="#precos" class="shimmer inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-brand-purple to-brand-cyan shadow-lg shadow-brand-purple/25 hover:scale-[1.02] transition">
+        <i class="fa-solid fa-gem text-amber-300"></i><span class="whitespace-nowrap"><span class="hidden sm:inline">Vitalício </span>R$ 15</span>
+      </a>
+    </div>
+  </header>
 
-  <h3>Como usar</h3>
-  <div class="card"><ol>
-    <li>Abra a página do vídeo e dê play.</li>
-    <li>Passe o mouse no vídeo e clique em <b>⚡ Baixar</b> (no YouTube, o botão fica ao lado de Gostei/Compartilhar) — ou clique no ícone ⚡ da extensão e escolha na lista.</li>
-    <li>No YouTube, escolha <b>Vídeo MP4</b> ou <b>Só Áudio M4A</b>.</li>
-    <li>Os arquivos vão para <code>Downloads/Argon/Videos/</code> e <code>Downloads/Argon/Audios/</code>.</li>
-    <li>Vídeos com proteção (DRM: Netflix, Prime Video, Disney+ etc.) e transmissões ao vivo não são baixados.</li>
-  </ol></div>
+  <main class="relative z-10">
 
-  <h3 id="chave">Ativar o Vitalício</h3>
-  <div class="card"><ol>
-    <li>Finalize o pagamento de R$ 15 e receba sua chave no formato <code>ARGON-XXXX-XXXX-X</code>.</li>
-    <li>Clique no ícone ⚡ → aba <b>💎 Vitalício</b> → cole a chave → <b>Ativar</b>.</li>
-  </ol></div>
+    <!-- HERO -->
+    <section class="pt-14 pb-16 md:pt-20 max-w-7xl mx-auto px-4 sm:px-6 text-center">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-card/90 border border-brand-purple/40 text-xs sm:text-sm text-gray-200 mb-8 animate-float">
+        <span class="flex h-2 w-2 rounded-full bg-brand-cyan animate-ping"></span>
+        <span class="font-semibold text-brand-cyan">Novo</span><span class="text-gray-500">•</span>
+        <span>TikTok, Instagram, Reels, cursos e streams HLS</span>
+      </div>
+      <div class="flex justify-center mb-6">
+        <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-tr from-brand-purple via-fuchsia-500 to-brand-cyan p-1 shadow-[0_0_50px_rgba(124,58,237,.5)] animate-float">
+          <div class="w-full h-full bg-brand-dark rounded-[22px] flex items-center justify-center"><i class="fa-solid fa-bolt text-5xl sm:text-6xl text-brand-amber drop-shadow-[0_0_15px_rgba(245,158,11,.8)]"></i></div>
+        </div>
+      </div>
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight">ARGON <span class="bg-gradient-to-r from-brand-purpleLight via-fuchsia-400 to-brand-cyanLight bg-clip-text text-transparent">VIDEO</span> DL</h1>
+      <p class="mt-6 text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+        Dê play, clique em <strong class="text-white">⚡ Baixar</strong> e pronto: o vídeo vai para a sua pasta Downloads.
+        Funciona nos sites que você usa — <strong class="text-white">TikTok, Instagram, Reels, plataformas de curso</strong> e qualquer página com vídeo — direto no navegador, sem programa e sem cadastro.
+      </p>
+      <div class="mt-8 flex flex-wrap justify-center gap-3 text-xs sm:text-sm font-semibold text-gray-300">
+        <span class="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-card/60 border border-brand-line"><i class="fa-solid fa-bolt-lightning text-brand-amber"></i>Roda 100% no navegador</span>
+        <span class="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-card/60 border border-brand-line"><i class="fa-solid fa-shield-halved text-emerald-400"></i>Sem rastreadores</span>
+        <span class="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-card/60 border border-brand-line"><i class="fa-solid fa-gift text-brand-cyan"></i>3 downloads grátis por dia</span>
+      </div>
+      <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="#precos" class="shimmer w-full sm:w-auto px-8 py-4 rounded-2xl font-extrabold bg-gradient-to-r from-brand-purple via-purple-600 to-brand-cyan shadow-[0_0_35px_rgba(124,58,237,.45)] hover:scale-105 transition flex items-center justify-center gap-3">
+          <i class="fa-solid fa-gem text-amber-300 text-lg"></i><span>Vitalício por R$ 15 (pagamento único)</span>
+        </a>
+        <a href="#instalacao" class="w-full sm:w-auto px-8 py-4 rounded-2xl font-bold text-gray-200 bg-brand-card/80 border border-brand-line hover:border-brand-purple/50 hover:scale-105 transition flex items-center justify-center gap-3">
+          <i class="fa-solid fa-download text-brand-cyan"></i><span>Instalar grátis</span>
+        </a>
+      </div>
+    </section>
 
-  <p class="note">Use apenas para baixar conteúdo que você tem direito de baixar (seus próprios vídeos, licenças Creative Commons, domínio público ou com autorização). O download de vídeos pode violar os Termos de Serviço do YouTube e direitos autorais; a responsabilidade pelo uso é de quem usa. Nenhum dado seu é enviado para nossos servidores.</p>
-</div>
-<script src="config.js"></script>
-<script>
-  // Se houver link de pagamento no config.js, o botão vai para ele.
-  const url = (self.ARGON_CONFIG || {}).checkoutUrl;
-  if (url) document.getElementById('buy').href = url;
-</script>
+    <!-- DEMONSTRAÇÃO ANIMADA -->
+    <section id="como-funciona" class="py-14 max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="text-center max-w-3xl mx-auto mb-10">
+        <span class="text-brand-cyan text-sm font-bold uppercase tracking-wider">Demonstração</span>
+        <h2 class="text-3xl sm:text-5xl font-extrabold mt-2">Veja funcionando em 15 segundos</h2>
+        <p class="text-gray-400 mt-4 sm:text-lg">É exatamente assim que a extensão se comporta. Toque nos passos para pular.</p>
+      </div>
+
+      <div class="rounded-3xl bg-brand-card border border-brand-line shadow-[0_0_60px_rgba(11,13,23,.9)] overflow-hidden max-w-5xl mx-auto">
+        <!-- barra do navegador -->
+        <div class="px-4 sm:px-5 py-3 bg-[#090b14] border-b border-brand-line flex items-center gap-3">
+          <div class="hidden sm:flex gap-2"><i class="w-3 h-3 rounded-full bg-red-500/80 block"></i><i class="w-3 h-3 rounded-full bg-yellow-500/80 block"></i><i class="w-3 h-3 rounded-full bg-green-500/80 block"></i></div>
+          <div class="flex-1 min-w-0 bg-brand-dark/90 rounded-xl px-3 py-1.5 border border-brand-line flex items-center gap-2 text-xs text-gray-400">
+            <i class="fa-solid fa-lock text-emerald-400 text-[10px]"></i><span class="truncate font-mono">https://www.cursoculinaria.com.br/aula/12-massas-caseiras</span>
+          </div>
+          <div id="ext-icon" class="shrink-0 w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-purple to-brand-cyan flex items-center justify-center ring-0 transition"><i class="fa-solid fa-bolt text-brand-amber text-sm"></i></div>
+        </div>
+
+        <!-- tela -->
+        <div class="relative w-full aspect-[16/10] sm:aspect-video bg-[#040509] overflow-hidden">
+          <div id="stage" class="absolute inset-0">
+            <!-- página do site -->
+            <div class="absolute inset-0 p-[3%] flex flex-col gap-[2.5%] bg-gradient-to-b from-[#0d1020] to-[#06070d]">
+              <div class="flex items-center gap-3">
+                <div class="w-[6%] aspect-square rounded-lg bg-orange-500/80 flex items-center justify-center text-white font-black text-[1.6vw] sm:text-[1vw]">C</div>
+                <div><div class="text-white font-bold text-[2vw] sm:text-sm">Aula 12 — Massas caseiras</div><div class="text-gray-500 text-[1.6vw] sm:text-xs">Curso de Culinária · Módulo 3</div></div>
+              </div>
+              <!-- player -->
+              <div id="player" class="relative flex-1 rounded-2xl overflow-hidden border border-brand-line bg-[radial-gradient(circle_at_30%_40%,#3b1d5e_0,#120d24_45%,#05060b_100%)]">
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div id="play-btn" class="w-[12%] aspect-square rounded-full bg-white/15 backdrop-blur flex items-center justify-center fade"><i class="fa-solid fa-play text-white text-[3vw] sm:text-2xl ml-1"></i></div>
+                </div>
+                <div id="progress" class="absolute left-0 bottom-0 h-1 bg-red-500 transition-all duration-[1400ms]" style="width:0%"></div>
+                <div class="absolute bottom-2 left-3 text-[1.6vw] sm:text-[11px] font-mono text-gray-300 bg-black/60 px-2 py-0.5 rounded" id="clock">00:00 / 12:48</div>
+                <!-- botão ⚡ Baixar que aparece sobre o vídeo -->
+                <div id="hover-btn" class="fade hide absolute top-[5%] right-[3%] px-[2.2%] py-[1.2%] rounded-full text-white font-bold text-[1.7vw] sm:text-[13px] bg-gradient-to-r from-brand-purple via-purple-500 to-brand-cyan shadow-[0_4px_16px_rgba(139,92,246,.55)]">⚡ Baixar</div>
+              </div>
+            </div>
+
+            <!-- popup da extensão (igual ao real) -->
+            <div id="popup" class="fade hide absolute top-[3%] right-[2.5%] w-[42%] rounded-2xl border border-white/10 bg-[#0b0e14]/95 backdrop-blur-xl shadow-[0_18px_50px_rgba(0,0,0,.6)] p-[1.6%] text-[1.5vw] sm:text-[11px]">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-[13%] aspect-square rounded-lg bg-gradient-to-br from-brand-purple via-purple-500 to-brand-cyan flex items-center justify-center"><i class="fa-solid fa-bolt text-white"></i></div>
+                <div><div class="font-bold text-white">ARGON <span class="bg-gradient-to-r from-brand-purpleLight to-brand-cyan bg-clip-text text-transparent">VIDEO</span> DL</div><div class="text-gray-500 text-[.9em]">Vídeos e áudios dos sites</div></div>
+              </div>
+              <div class="rounded-xl border border-white/10 bg-white/5 p-[3%] space-y-1.5">
+                <div class="text-gray-400 text-[.9em] truncate">Aula 12 — Massas caseiras</div>
+                <div class="rounded-lg p-[3%] border border-transparent [background:linear-gradient(#0b0e14,#0b0e14)_padding-box,linear-gradient(90deg,#6366f1,#a855f7,#06b6d4)_border-box] flex items-center gap-2">
+                  <span>🎬</span>
+                  <div class="flex-1 min-w-0"><div class="text-[.8em] font-extrabold bg-gradient-to-r from-brand-purpleLight to-brand-cyan bg-clip-text text-transparent">▶ VÍDEO DA TELA</div><div class="font-bold text-white">Stream HLS · 1080p · 12:48</div><div class="text-gray-500 truncate">cdn.cursoculinaria.com.br</div></div>
+                  <div id="popup-dl" class="px-2 py-1 rounded-lg bg-gradient-to-r from-brand-purple to-brand-cyan font-bold text-white whitespace-nowrap">⚡ Baixar</div>
+                </div>
+                <div class="text-gray-500">▼ Outros vídeos da página (2)</div>
+              </div>
+              <div class="mt-2 rounded-xl border border-white/10 bg-white/5 p-[3%] flex justify-between items-center"><div><div class="text-gray-500 uppercase text-[.8em] tracking-wider">Downloads grátis</div><div id="credits" class="font-bold text-white">3 de 3 hoje</div></div><div class="text-gray-500 text-[.85em]">Ilimitado: 💎 R$ 15</div></div>
+              <div class="mt-2 rounded-xl border border-white/10 bg-white/5 p-[3%]">
+                <div class="flex items-center gap-2"><span id="dot" class="w-2 h-2 rounded-full bg-gray-500"></span><span id="status" class="text-gray-200">Pronto para baixar.</span></div>
+                <div class="h-1.5 mt-2 rounded bg-white/10 overflow-hidden"><div id="bar" class="h-full w-0 bg-gradient-to-r from-brand-purple via-purple-500 to-brand-cyan transition-all duration-[2600ms] ease-linear"></div></div>
+              </div>
+            </div>
+
+            <!-- pasta Downloads -->
+            <div id="folder" class="fade hide absolute left-[4%] bottom-[6%] w-[46%] rounded-2xl border border-brand-line bg-[#0d1424]/95 shadow-2xl overflow-hidden text-[1.5vw] sm:text-[11px]">
+              <div class="px-3 py-2 bg-[#0a1020] border-b border-brand-line font-mono text-gray-400 truncate">📁 Downloads › <b class="text-brand-cyan">Argon</b> › Videos</div>
+              <div class="p-2 space-y-1">
+                <div class="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-white"><i class="fa-solid fa-file-video text-brand-cyan"></i><span class="truncate flex-1">Aula 12 — Massas caseiras [cdn.cursoculinaria.com.br].mp4</span><span class="text-emerald-400 font-bold">✔</span></div>
+                <div class="flex items-center gap-2 px-2 py-1.5 rounded-lg text-gray-500"><i class="fa-solid fa-file-video"></i><span class="truncate">Aula 11 — Molhos [cdn.cursoculinaria.com.br].mp4</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- cursor -->
+          <svg id="cursor" class="cursor" viewBox="0 0 24 24" style="left:50%;top:60%"><path d="M3 2l7 19 2.5-7.5L20 11z" fill="#fff" stroke="#000" stroke-width="1.2"/></svg>
+          <!-- legenda -->
+          <div class="absolute bottom-[4%] right-[3%] max-w-[60%] px-3 py-2 rounded-xl bg-brand-card/90 border border-brand-cyan/40 text-[1.7vw] sm:text-xs flex items-center gap-2 z-50 backdrop-blur">
+            <i id="cap-icon" class="fa-solid fa-play text-brand-cyan"></i><span id="caption" class="font-medium">Abra a aula e dê play no vídeo.</span>
+          </div>
+        </div>
+
+        <!-- controles -->
+        <div class="p-4 sm:p-6 bg-brand-card border-t border-brand-line flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full md:w-auto" id="steps"></div>
+          <button id="btn-play" class="px-4 py-2.5 rounded-xl bg-brand-dark border border-brand-line text-gray-300 text-xs font-bold hover:text-white flex items-center gap-2"><i id="play-icon" class="fa-solid fa-pause text-brand-cyan"></i><span id="play-text">Pausar demonstração</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLANOS -->
+    <section id="precos" class="py-20 max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="text-center max-w-3xl mx-auto mb-14">
+        <span class="text-brand-purpleLight text-sm font-bold uppercase tracking-wider">Planos</span>
+        <h2 class="text-3xl sm:text-5xl font-extrabold mt-2">Comece grátis. Libere tudo por R$ 15.</h2>
+        <p class="text-gray-400 mt-4 sm:text-lg">Sem mensalidade e sem anúncios.</p>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
+        <!-- Grátis -->
+        <div class="rounded-3xl bg-brand-card/80 border border-brand-line p-8 flex flex-col justify-between">
+          <div>
+            <span class="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-bold">🆓 Grátis</span>
+            <h3 class="text-2xl font-bold mt-4">Argon Free</h3>
+            <p class="text-gray-400 text-sm mt-1">Para experimentar e para o dia a dia leve.</p>
+            <div class="my-6"><span class="text-4xl font-extrabold">R$ 0</span><span class="text-gray-400 text-sm"> / para sempre</span></div>
+            <ul class="space-y-3 text-sm text-gray-300 border-t border-brand-line pt-6">
+              <li class="flex gap-3"><i class="fa-solid fa-check text-emerald-400 mt-1"></i>3 downloads por dia (renova à meia-noite)</li>
+              <li class="flex gap-3"><i class="fa-solid fa-check text-emerald-400 mt-1"></i>TikTok, Instagram, Reels, cursos e qualquer site com vídeo</li>
+              <li class="flex gap-3"><i class="fa-solid fa-check text-emerald-400 mt-1"></i>Vídeo e áudio na qualidade que o site entrega</li>
+              <li class="flex gap-3"><i class="fa-solid fa-check text-emerald-400 mt-1"></i>Sem anúncios</li>
+            </ul>
+          </div>
+          <a href="#instalacao" class="mt-8 w-full py-3.5 rounded-xl font-bold text-sm text-gray-300 bg-brand-dark hover:bg-gray-800 border border-brand-line text-center block">Instalar grátis</a>
+        </div>
+
+        <!-- Vitalício (destaque) -->
+        <div class="relative rounded-3xl bg-gradient-to-b from-brand-card to-[#0f1224] border-2 border-brand-purple shadow-[0_0_50px_rgba(124,58,237,.35)] p-8 flex flex-col justify-between lg:-translate-y-3">
+          <div class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-gradient-to-r from-brand-purple to-brand-cyan text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-fire text-amber-300"></i>Mais escolhido</div>
+          <div>
+            <div class="flex items-center justify-between"><span class="px-3 py-1 rounded-full bg-brand-purple/20 border border-brand-purple/40 text-brand-purpleLight text-xs font-bold">💎 Vitalício</span><span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">Pagamento único</span></div>
+            <h3 class="text-3xl font-extrabold mt-4">Argon Vitalício</h3>
+            <p class="text-gray-300 text-sm mt-1">Baixe à vontade, para sempre.</p>
+            <div class="my-6 flex items-baseline gap-2"><span class="text-5xl font-black tracking-tight">R$ 15</span><span class="text-gray-400 text-sm">uma vez só</span></div>
+            <ul class="space-y-3 text-sm text-gray-200 border-t border-brand-line pt-6">
+              <li class="flex gap-3 font-semibold"><i class="fa-solid fa-infinity text-brand-cyan mt-1"></i>Downloads ilimitados, sem limite diário</li>
+              <li class="flex gap-3"><i class="fa-solid fa-globe text-purple-400 mt-1"></i>Todos os sites da versão grátis</li>
+              <li class="flex gap-3"><i class="fa-solid fa-envelope-circle-check text-brand-cyan mt-1"></i>Chave enviada na hora por e-mail</li>
+              <li class="flex gap-3"><i class="fa-solid fa-laptop text-amber-400 mt-1"></i>Vale em até 3 navegadores</li>
+              <li class="flex gap-3"><i class="fa-solid fa-arrows-rotate text-emerald-400 mt-1"></i>Atualizações incluídas</li>
+            </ul>
+          </div>
+          <a href="https://pay.kiwify.com.br/7RffvPJ" target="_blank" rel="noopener" class="shimmer mt-8 w-full py-4 rounded-2xl font-extrabold bg-gradient-to-r from-brand-purple via-fuchsia-600 to-brand-cyan shadow-[0_0_30px_rgba(168,85,247,.5)] hover:scale-[1.02] transition text-center block"><i class="fa-solid fa-gem text-amber-300 mr-2"></i>Quero o Vitalício por R$ 15</a>
+          <p class="text-center text-xs text-gray-500 mt-3">Pix ou cartão · processado pela Kiwify</p>
+        </div>
+
+        <!-- PRO (em breve) -->
+        <div class="relative rounded-3xl bg-brand-card/60 border border-dashed border-amber-500/40 p-8 flex flex-col justify-between">
+          <div class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-extrabold uppercase tracking-wider whitespace-nowrap">🚧 Em breve</div>
+          <div>
+            <span class="px-3 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold"><i class="fa-brands fa-youtube mr-1"></i>YouTube</span>
+            <h3 class="text-2xl font-bold mt-4">Argon PRO</h3>
+            <p class="text-gray-400 text-sm mt-1">Tudo do Vitalício + YouTube.</p>
+            <div class="my-6"><span class="text-4xl font-extrabold">R$ 30</span><span class="text-gray-400 text-sm"> / pagamento único</span></div>
+            <ul class="space-y-3 text-sm text-gray-300 border-t border-brand-line pt-6">
+              <li class="flex gap-3"><i class="fa-solid fa-check text-emerald-400 mt-1"></i>Tudo do Vitalício</li>
+              <li class="flex gap-3"><i class="fa-brands fa-youtube text-red-400 mt-1"></i>Vídeos e Shorts do YouTube (MP4)</li>
+              <li class="flex gap-3"><i class="fa-solid fa-headphones text-brand-cyan mt-1"></i>Só o áudio (M4A)</li>
+              <li class="flex gap-3 text-gray-400"><i class="fa-solid fa-circle-info text-amber-400 mt-1"></i>Versão separada, instalada fora da Chrome Web Store (as regras da loja não permitem YouTube)</li>
+            </ul>
+          </div>
+          <span class="mt-8 w-full py-3.5 rounded-xl font-bold text-sm text-amber-300 bg-amber-500/10 border border-amber-500/30 text-center block cursor-not-allowed">Em breve</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ATIVAÇÃO -->
+    <section id="ativacao" class="py-14 max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="bg-brand-card/60 border border-brand-line rounded-3xl p-8 sm:p-12 backdrop-blur-xl">
+        <div class="text-center max-w-3xl mx-auto mb-12">
+          <span class="text-brand-cyan text-sm font-bold uppercase tracking-wider">Automático</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold mt-2">Comprou, chegou, ativou</h2>
+          <p class="text-gray-400 mt-2">Sua chave chega no e-mail logo depois que o pagamento é aprovado.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-brand-dark/80 border border-brand-line p-6 rounded-2xl"><div class="w-10 h-10 rounded-xl bg-brand-purple/20 text-brand-purpleLight font-extrabold flex items-center justify-center text-lg mb-4 border border-brand-purple/30">1</div><h4 class="text-lg font-bold mb-2">Pagamento</h4><p class="text-gray-400 text-sm">Pix ou cartão no checkout seguro da Kiwify.</p></div>
+          <div class="bg-brand-dark/80 border border-brand-line p-6 rounded-2xl"><div class="w-10 h-10 rounded-xl bg-brand-cyan/20 text-brand-cyanLight font-extrabold flex items-center justify-center text-lg mb-4 border border-brand-cyan/30">2</div><h4 class="text-lg font-bold mb-2">Chave no e-mail</h4><p class="text-gray-400 text-sm">Assim que aprova, sua chave única é gerada e enviada. Olhe também o spam.</p></div>
+          <div class="bg-brand-dark/80 border border-brand-line p-6 rounded-2xl"><div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 font-extrabold flex items-center justify-center text-lg mb-4 border border-amber-500/30">3</div><h4 class="text-lg font-bold mb-2">Cole na extensão</h4><p class="text-gray-400 text-sm">Ícone ⚡ → aba <b>💎 Vitalício</b> → cole a chave → <b>Ativar</b>.</p></div>
+          <div class="bg-brand-dark/80 border border-brand-line p-6 rounded-2xl"><div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 font-extrabold flex items-center justify-center text-lg mb-4 border border-emerald-500/30">4</div><h4 class="text-lg font-bold mb-2">Ilimitado</h4><p class="text-gray-400 text-sm">O limite diário some e os downloads ficam em ∞.</p></div>
+        </div>
+        <div class="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
+          <button id="open-email" class="inline-flex items-center justify-center gap-3 px-6 py-3 rounded-xl bg-brand-dark border border-brand-cyan/50 text-brand-cyan hover:bg-brand-cyan/10 font-bold text-sm"><i class="fa-solid fa-envelope-open-text"></i>Ver o e-mail que você recebe</button>
+          <a href="https://argon-licencas.argonvd.workers.dev/minha-chave" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-3 px-6 py-3 rounded-xl bg-brand-dark border border-brand-line text-gray-300 hover:text-white font-bold text-sm"><i class="fa-solid fa-rotate"></i>Não recebi minha chave</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- E-MAIL (prévia fiel ao e-mail real) -->
+    <div id="email-modal" class="fixed inset-0 z-[70] bg-black/80 backdrop-blur-md hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Prévia do e-mail">
+      <div class="bg-white text-gray-900 rounded-3xl max-w-xl w-full shadow-2xl overflow-hidden">
+        <div class="px-6 py-4 border-b flex items-center gap-3 bg-gray-50">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brand-purple to-brand-cyan text-white flex items-center justify-center font-bold">A</div>
+          <div class="min-w-0"><div class="font-bold text-sm">Argon Downloader</div><div class="text-xs text-gray-500 truncate">💎 Sua chave do Argon Vitalício</div></div>
+          <button id="close-email" class="ml-auto text-gray-400 hover:text-gray-900 p-2" aria-label="Fechar"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        <div class="p-6 sm:p-8">
+          <h3 class="text-xl font-bold mb-2">💎 Seu Argon Vitalício chegou!</h3>
+          <p class="text-sm">Obrigado pela compra. Esta é a sua chave:</p>
+          <div class="my-4 p-4 rounded-xl border-2 border-brand-purple text-center font-mono font-bold text-xl tracking-wide">ARGON-XXXX-XXXX-X</div>
+          <ol class="list-decimal pl-5 text-sm space-y-1"><li>Clique no ícone ⚡ da extensão Argon Video Downloader.</li><li>Abra a aba <b>💎 Vitalício</b>.</li><li>Cole a chave e clique em <b>Ativar</b>.</li></ol>
+          <p class="text-xs text-gray-500 mt-4">A chave vale em até 3 navegadores. Guarde este e-mail.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSTALAÇÃO -->
+    <section id="instalacao" class="py-20 max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <span class="text-brand-cyan text-sm font-bold uppercase tracking-wider">Instalação</span>
+        <h2 class="text-3xl sm:text-5xl font-extrabold mt-2">Instale em 1 minuto</h2>
+        <p class="text-gray-400 mt-4 sm:text-lg">Chrome, Brave, Opera e Edge.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+        <div class="bg-brand-card border border-brand-purple/40 rounded-3xl p-7 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-3"><i class="fa-brands fa-chrome text-3xl text-brand-cyan"></i><h4 class="text-xl font-bold">Chrome Web Store</h4><span class="ml-auto text-[11px] font-bold px-2 py-1 rounded-lg bg-amber-500/10 text-amber-300 border border-amber-500/30">em análise</span></div>
+            <p class="text-gray-400 text-sm mt-3">O jeito mais fácil: um clique em “Usar no Chrome” e as atualizações chegam sozinhas. Assim que a loja aprovar, o botão abaixo passa a funcionar.</p>
+          </div>
+          <a id="cws-link" href="#" aria-disabled="true" class="mt-6 w-full py-3 rounded-xl bg-brand-dark border border-brand-line text-gray-500 font-bold text-sm text-center block cursor-not-allowed"><i class="fa-brands fa-chrome mr-1"></i>Usar no Chrome — em breve</a>
+        </div>
+        <div class="bg-brand-card border border-brand-line rounded-3xl p-7 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-3"><i class="fa-solid fa-file-zipper text-3xl text-brand-purpleLight"></i><h4 class="text-xl font-bold">Instalação manual</h4></div>
+            <ol class="text-gray-300 text-sm mt-3 space-y-2 list-decimal pl-5">
+              <li>Baixe o arquivo abaixo e <b>extraia</b> a pasta.</li>
+              <li>Abra <code class="px-1.5 py-0.5 bg-brand-dark text-brand-cyan rounded font-mono text-xs" id="ext-url">chrome://extensions</code> (Brave: <code class="font-mono text-xs">brave://</code>, Opera: <code class="font-mono text-xs">opera://</code>).</li>
+              <li>Ligue o <b>Modo do desenvolvedor</b> (canto superior direito).</li>
+              <li>Clique em <b>Carregar sem compactação</b> e escolha a pasta extraída.</li>
+            </ol>
+          </div>
+          <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <a href="argon-video-downloader.zip" download class="py-3 rounded-xl bg-gradient-to-r from-brand-purple to-brand-cyan font-bold text-sm text-center"><i class="fa-solid fa-download mr-1"></i>Baixar .zip</a>
+            <button id="copy-url" class="py-3 rounded-xl bg-brand-dark border border-brand-line text-gray-300 font-bold text-sm hover:text-white"><i class="fa-solid fa-copy text-brand-cyan mr-1"></i>Copiar chrome://extensions</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="py-14 max-w-4xl mx-auto px-4 sm:px-6">
+      <div class="text-center mb-12"><span class="text-brand-purpleLight text-sm font-bold uppercase tracking-wider">Dúvidas</span><h2 class="text-3xl sm:text-4xl font-extrabold mt-2">Perguntas frequentes</h2></div>
+      <div class="space-y-4" id="faq-list">
+        <details class="group bg-brand-card border border-brand-line rounded-2xl"><summary class="cursor-pointer list-none p-6 font-bold flex justify-between items-center hover:text-brand-cyan">Funciona no YouTube?<i class="fa-solid fa-chevron-down text-brand-purpleLight transition group-open:rotate-180"></i></summary><p class="px-6 pb-6 text-gray-400 text-sm leading-relaxed">Não nesta versão: as regras da Chrome Web Store não permitem baixar do YouTube. O YouTube vai estar no <b>Argon PRO</b>, uma versão separada que está chegando em breve.</p></details>
+        <details class="group bg-brand-card border border-brand-line rounded-2xl"><summary class="cursor-pointer list-none p-6 font-bold flex justify-between items-center hover:text-brand-cyan">Preciso instalar programa no computador?<i class="fa-solid fa-chevron-down text-brand-purpleLight transition group-open:rotate-180"></i></summary><p class="px-6 pb-6 text-gray-400 text-sm leading-relaxed">Não. É uma extensão leve do navegador; tudo acontece no seu próprio Chrome, sem servidor no meio do download.</p></details>
+        <details class="group bg-brand-card border border-brand-line rounded-2xl"><summary class="cursor-pointer list-none p-6 font-bold flex justify-between items-center hover:text-brand-cyan">Qual a qualidade do vídeo?<i class="fa-solid fa-chevron-down text-brand-purpleLight transition group-open:rotate-180"></i></summary><p class="px-6 pb-6 text-gray-400 text-sm leading-relaxed">A mesma que o site entrega para o seu player. Em streams (HLS), a extensão escolhe a maior qualidade disponível. O arquivo sai como .mp4, .webm ou .ts (toca no VLC e na maioria dos players).</p></details>
+        <details class="group bg-brand-card border border-brand-line rounded-2xl"><summary class="cursor-pointer list-none p-6 font-bold flex justify-between items-center hover:text-brand-cyan">Baixa Netflix, Prime Video, Disney+…?<i class="fa-solid fa-chevron-down text-brand-purpleLight transition group-open:rotate-180"></i></summary><p class="px-6 pb-6 text-gray-400 text-sm leading-relaxed">Não. Conteúdo protegido (DRM) e transmissões ao vivo não são baixados — a extensão avisa e não gasta seu download.</p></details>
+        <details class="group bg-brand-card border border-brand-line rounded-2xl"><summary class="cursor-pointer list-none p-6 font-bold flex justify-between items-center hover:text-brand-cyan">O Vitalício tem mensalidade?<i class="fa-solid fa-chevron-down text-brand-purpleLight transition group-open:rotate-180"></i></summary><p class="px-6 pb-6 text-gray-400 text-sm leading-relaxed">Não. São R$ 15 uma única vez. A chave vale em até 3 navegadores.</p></details>
+        <details class="group bg-brand-card border border-brand-line rounded-2xl"><summary class="cursor-pointer list-none p-6 font-bold flex justify-between items-center hover:text-brand-cyan">Não recebi a chave. E agora?<i class="fa-solid fa-chevron-down text-brand-purpleLight transition group-open:rotate-180"></i></summary><p class="px-6 pb-6 text-gray-400 text-sm leading-relaxed">Confira o spam e a aba Promoções. Se não estiver lá, use <a class="text-brand-cyan underline" href="https://argon-licencas.argonvd.workers.dev/minha-chave" target="_blank" rel="noopener">Não recebi minha chave</a> com o e-mail da compra: reenviamos para ele.</p></details>
+      </div>
+      <p class="text-center text-xs text-gray-500 mt-10 max-w-2xl mx-auto">Use apenas com conteúdo que você tem direito de baixar (seus vídeos, cursos que você comprou e que permitem download, licenças livres). O respeito aos direitos autorais e aos termos de cada site é de quem usa.</p>
+    </section>
+  </main>
+
+  <footer class="border-t border-brand-line bg-[#040509] py-10 relative z-10 text-xs text-gray-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-brand-purple/20 flex items-center justify-center">⚡</div><div><span class="font-extrabold text-white text-sm">ARGON VIDEO DL</span><p class="text-[11px]">© 2026 Argon Video DL</p></div></div>
+      <div class="flex gap-5"><a href="privacidade.html" class="hover:text-white">Política de privacidade</a><a href="#faq" class="hover:text-white">Dúvidas</a></div>
+    </div>
+  </footer>
+
+  <div id="toast" class="fixed bottom-6 right-6 z-[80] bg-brand-card border border-brand-cyan text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-bold translate-y-24 opacity-0 transition-all duration-300 pointer-events-none"></div>
+
+  <script>
+    /* ---------- demonstração: cenas com câmera, cursor e estados iguais aos da extensão ---------- */
+    const $ = (id) => document.getElementById(id);
+    // foco = ponto (em % da tela) onde a câmera aproxima; cursor = onde a setinha vai
+    const SCENES = [
+      { label: '1. Dar play', caption: 'Abra a aula e dê play no vídeo.', icon: 'fa-play', zoom: 1, focus: [50, 50], cursor: [50, 55], run: () => {
+          $('play-btn').classList.add('hide'); $('progress').style.width = '18%'; $('clock').textContent = '02:17 / 12:48'; } },
+      { label: '2. ⚡ Baixar', caption: 'Passe o mouse no vídeo: aparece o botão ⚡ Baixar.', icon: 'fa-bolt', zoom: 1.6, focus: [86, 18], cursor: [88, 17], click: true, run: () => {
+          $('hover-btn').classList.remove('hide'); } },
+      { label: '3. Vídeo da tela', caption: 'Ou abra o ícone ⚡: o vídeo que está na tela já vem marcado.', icon: 'fa-crosshairs', zoom: 1.45, focus: [78, 30], cursor: [93, 41], click: true, run: () => {
+          $('hover-btn').classList.add('hide'); $('popup').classList.remove('hide'); $('ext-icon').classList.add('ring-2', 'ring-brand-cyan'); } },
+      { label: '4. Baixando', caption: 'Ele baixa as partes do stream e junta num arquivo só.', icon: 'fa-download', zoom: 1.45, focus: [78, 46], cursor: [93, 41], run: () => {
+          $('popup').classList.remove('hide'); $('dot').className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse'; $('status').textContent = 'Baixando "Aula 12": parte 64/64'; $('bar').style.width = '100%'; } },
+      { label: '5. Pronto', caption: 'Pronto: o vídeo está em Downloads/Argon/Videos.', icon: 'fa-circle-check', zoom: 1.3, focus: [26, 78], cursor: [40, 82], run: () => {
+          $('popup').classList.remove('hide'); $('dot').className = 'w-2 h-2 rounded-full bg-emerald-400'; $('status').textContent = '✔ Download concluído. Restam 2 grátis hoje.'; $('credits').textContent = '2 de 3 hoje'; $('bar').style.width = '100%'; $('folder').classList.remove('hide'); } }
+    ];
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let scene = -1, playing = !reduce, timer = null;
+
+    function reset() {
+      ['hover-btn', 'popup', 'folder'].forEach((id) => $(id).classList.add('hide'));
+      $('play-btn').classList.remove('hide'); $('progress').style.width = '0%'; $('clock').textContent = '00:00 / 12:48';
+      $('dot').className = 'w-2 h-2 rounded-full bg-gray-500'; $('status').textContent = 'Pronto para baixar.'; $('credits').textContent = '3 de 3 hoje';
+      $('bar').style.transition = 'none'; $('bar').style.width = '0%'; void $('bar').offsetWidth; $('bar').style.transition = '';
+      $('ext-icon').classList.remove('ring-2', 'ring-brand-cyan');
+    }
+
+    function show(i) {
+      if (i <= scene || i === 0) reset();
+      // garante o estado de todas as cenas anteriores (ao pular passos)
+      for (let k = 0; k <= i; k++) SCENES[k].run();
+      if (i >= 3) { $('hover-btn').classList.add('hide'); }
+      scene = i;
+      const s = SCENES[i];
+      $('stage').style.transformOrigin = `${s.focus[0]}% ${s.focus[1]}%`;
+      $('stage').style.transform = `scale(${s.zoom})`;
+      const c = $('cursor');
+      c.style.left = `${s.cursor[0]}%`; c.style.top = `${s.cursor[1]}%`;
+      c.classList.remove('click');
+      if (s.click) setTimeout(() => { c.classList.add('click'); }, 700);
+      $('caption').textContent = s.caption;
+      $('cap-icon').className = `fa-solid ${s.icon} text-brand-cyan`;
+      [...$('steps').children].forEach((b, k) => {
+        b.className = k === i
+          ? 'px-3 py-2.5 rounded-xl text-xs font-bold bg-brand-purple/30 text-white border border-brand-purple'
+          : 'px-3 py-2.5 rounded-xl text-xs font-bold bg-brand-dark/60 text-gray-400 border border-brand-line hover:text-white';
+      });
+    }
+
+    SCENES.forEach((s, i) => {
+      const b = document.createElement('button');
+      b.textContent = s.label;
+      b.addEventListener('click', () => { show(i); });
+      $('steps').append(b);
+    });
+    if (window.innerWidth >= 640) $('steps').className = 'grid grid-cols-3 sm:grid-cols-5 gap-2 w-full md:w-auto';
+
+    function tick() { show((scene + 1) % SCENES.length); }
+    function setPlaying(p) {
+      playing = p; clearInterval(timer);
+      if (p) timer = setInterval(tick, 3200);
+      $('play-icon').className = `fa-solid ${p ? 'fa-pause' : 'fa-play'} text-brand-cyan`;
+      $('play-text').textContent = p ? 'Pausar demonstração' : 'Continuar demonstração';
+    }
+    $('btn-play').addEventListener('click', () => setPlaying(!playing));
+    show(0);
+    setPlaying(playing);
+
+    /* ---------- e-mail, cópia, toast ---------- */
+    const modal = $('email-modal');
+    $('open-email').addEventListener('click', () => { modal.classList.remove('hidden'); modal.classList.add('flex'); });
+    $('close-email').addEventListener('click', () => { modal.classList.add('hidden'); modal.classList.remove('flex'); });
+    modal.addEventListener('click', (e) => { if (e.target === modal) $('close-email').click(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $('close-email').click(); });
+
+    function toast(msg) {
+      const t = $('toast'); t.textContent = msg;
+      t.classList.remove('translate-y-24', 'opacity-0'); setTimeout(() => t.classList.add('translate-y-24', 'opacity-0'), 2600);
+    }
+    $('copy-url').addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText('chrome://extensions'); toast('Copiado! Cole na barra de endereço.'); }
+      catch (_) { toast('Digite chrome://extensions na barra de endereço.'); }
+    });
+    $('cws-link').addEventListener('click', (e) => { if ($('cws-link').getAttribute('aria-disabled') === 'true') { e.preventDefault(); toast('Em análise na Chrome Web Store. Por enquanto, use a instalação manual.'); } });
+  </script>
 </body>
 </html>
