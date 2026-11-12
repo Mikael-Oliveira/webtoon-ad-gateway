@@ -38,5 +38,5 @@ self.ARGON_CONFIG = {
    */
   apiUrl: '',
   recheckDays: 7,                   // reconfere a chave no servidor (estorno revoga)
-  checkoutUrl: ''                   // link de checkout da Kiwify (R$ 15). Preenchido: "Comprar" abre ele (vence o /comprar do Mercado Pago)
+  checkoutUrl: 'https://pay.kiwify.com.br/7RffvPJ' // link de checkout da Kiwify (R$ 15). Preenchido: "Comprar" abre ele (vence o /comprar do Mercado Pago)
 };
