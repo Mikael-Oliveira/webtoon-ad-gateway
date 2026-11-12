@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Argon Video Downloader — instalação e plano Vitalício</title>
+  <link rel="stylesheet" href="argon.css">
+  <style>
+    body { font-size: 15px; }
+    .page { max-width: 860px; margin: 0 auto; padding: 32px 16px 64px; }
+    .hero { text-align: center; padding: 24px 0 8px; }
+    .hero .logo { width: 64px; height: 64px; font-size: 32px; margin: 0 auto 14px; border-radius: 18px; }
+    .hero h1 { font-size: clamp(26px, 5vw, 40px); }
+    .hero p { color: var(--muted); max-width: 560px; margin: 10px auto 0; }
+    .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 22px; }
+    .card h2 { margin: 0 0 6px; font-size: 16px; }
+    .card p, .card li { color: var(--muted); margin: 4px 0; }
+    ol { padding-left: 20px; margin: 8px 0 0; } ol li { margin: 6px 0; color: var(--text); }
+    code { background: rgba(255,255,255,.08); border-radius: 6px; padding: 1px 6px; font-size: .9em; }
+    .price { font-size: 38px; font-weight: 800; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    a.cta { display: block; text-decoration: none; text-align: center; }
+    h3 { margin: 28px 0 0; font-size: 18px; }
+    .note { margin-top: 28px; color: var(--muted); font-size: 12px; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="hero">
+    <div class="logo">⚡</div>
+    <h1>ARGON <span>VIDEO</span> DL</h1>
+    <p>Baixe vídeos e áudios de qualquer site — incluindo YouTube e Shorts — direto no seu navegador. Sem servidor, sem cadastro.</p>
+  </div>
+
+  <div class="grid">
+    <div class="card"><h2>🆓 Grátis</h2><p><b>1 anúncio de 15 s = 3 downloads.</b></p><p>Vídeo ou só áudio, você escolhe. Cada download concluído gasta 1 crédito.</p></div>
+    <div class="card life"><h2>💎 Vitalício</h2><div class="price">R$ 15</div><p>Pagamento único. Sem anúncios para sempre, créditos ∞.</p>
+      <a class="cta" id="buy" href="#chave"><button class="cta" type="button">💎 Quero o Vitalício</button></a></div>
+  </div>
+
+  <h3>Como instalar (2 minutos)</h3>
+  <div class="grid">
+    <div class="card"><h2>Chrome (modo desenvolvedor)</h2>
+      <ol>
+        <li>Baixe e extraia o arquivo <code>argon-video-downloader-v1.zip</code>.</li>
+        <li>Abra <code>chrome://extensions</code>.</li>
+        <li>Ligue <b>Modo do desenvolvedor</b> (canto superior direito).</li>
+        <li>Clique em <b>Carregar sem compactação</b> e escolha a pasta extraída (a que tem o <code>manifest.json</code>).</li>
+        <li>Fixe o ícone ⚡ na barra de ferramentas.</li>
+      </ol></div>
+    <div class="card"><h2>Brave</h2>
+      <ol>
+        <li>Abra <code>brave://extensions</code>.</li>
+        <li>Ligue <b>Modo do desenvolvedor</b>.</li>
+        <li><b>Carregar sem compactação</b> → pasta extraída.</li>
+      </ol>
+      <p>Se o Brave bloquear o anúncio, desative os Escudos (Shields) só no site do gateway.</p></div>
+    <div class="card"><h2>Opera</h2>
+      <ol>
+        <li>Abra <code>opera://extensions</code>.</li>
+        <li>Ligue <b>Modo do desenvolvedor</b>.</li>
+        <li><b>Carregar descompactada</b> → pasta extraída.</li>
+      </ol></div>
+  </div>
+
+  <h3>Como usar</h3>
+  <div class="card"><ol>
+    <li>Abra a página do vídeo e dê play.</li>
+    <li>Passe o mouse no vídeo e clique em <b>⚡ Baixar</b> (no YouTube, o botão fica ao lado de Gostei/Compartilhar) — ou clique no ícone ⚡ da extensão e escolha na lista.</li>
+    <li>No YouTube, escolha <b>Vídeo MP4</b> ou <b>Só Áudio M4A</b>.</li>
+    <li>Os arquivos vão para <code>Downloads/Argon/Videos/</code> e <code>Downloads/Argon/Audios/</code>.</li>
+    <li>Vídeos com proteção (DRM: Netflix, Prime Video, Disney+ etc.) e transmissões ao vivo não são baixados.</li>
+  </ol></div>
+
+  <h3 id="chave">Ativar o Vitalício</h3>
+  <div class="card"><ol>
+    <li>Finalize o pagamento de R$ 15 e receba sua chave no formato <code>ARGON-XXXX-XXXX-X</code>.</li>
+    <li>Clique no ícone ⚡ → aba <b>💎 Vitalício</b> → cole a chave → <b>Ativar</b>.</li>
+  </ol></div>
+
+  <p class="note">Use apenas para baixar conteúdo que você tem direito de baixar (seus próprios vídeos, licenças Creative Commons, domínio público ou com autorização). O download de vídeos pode violar os Termos de Serviço do YouTube e direitos autorais; a responsabilidade pelo uso é de quem usa. Nenhum dado seu é enviado para nossos servidores.</p>
+</div>
+<script src="config.js"></script>
+<script>
+  // Se houver link de pagamento no config.js, o botão vai para ele.
+  const url = (self.ARGON_CONFIG || {}).checkoutUrl;
+  if (url) document.getElementById('buy').href = url;
+</script>
+</body>
+</html>
